@@ -8,8 +8,16 @@ module.exports = function(app, {
       Seorecord
     } = models
 
-    const result = await api.toJSONApi(Seorecord.find({}), req)
+    const result = await Seorecord.find({}).populate({
+      path: 'translation'
+    })
 
-    res.send(result)
+    let included = {}
+
+    const jsopApiResult = result.map(r => {
+      return api.serializeModelToJSONApi(r, included)
+    })
+
+    res.send(api.queryParamsParser(req))
   });
 };
